@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch the Ball Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #87CEEB, #1E90FF);
+            text-align: center;
+        }
+        #gameCanvas {
+            display: block;
+            background: #fff;
+            border-bottom: 5px solid #8B4513;
+            margin: auto;
+        }
+        #score {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: white;">Catch the Ball Game</h1>
+    <div id="score">Score: 0</div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 400;
+        canvas.height = 500;
+
+        let basket = { x: 175, y: 450, width: 50, height: 20 };
+        let ball = { x: Math.random() * 350, y: 0, radius: 10, speed: 2 };
+        let score = 0;
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowLeft" && basket.x > 0) basket.x -= 20;
+            if (event.key === "ArrowRight" && basket.x < canvas.width - basket.width) basket.x += 20;
+        });
+
+        function drawBasket() {
+            ctx.fillStyle = "brown";
+            ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "red";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function updateGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBasket();
+            drawBall();
+
+            ball.y += ball.speed;
+            if (ball.y > canvas.height) {
+                ball.y = 0;
+                ball.x = Math.random() * 350;
+            }
+
+            if (
+                ball.y + ball.radius >= basket.y &&
+                ball.x >= basket.x &&
+                ball.x <= basket.x + basket.width
+            ) {
+                score++;
+                document.getElementById("score").innerText = "Score: " + score;
+                ball.y = 0;
+                ball.x = Math.random() * 350;
+                ball.speed += 0.2; // Increase difficulty
+            }
+
+            requestAnimationFrame(updateGame);
+        }
+
+        updateGame();
+    </script>
+</body>
+</html>
